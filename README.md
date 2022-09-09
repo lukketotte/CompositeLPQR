@@ -16,7 +16,6 @@ The code also includes the R code from the paper Huang and Chen (2015) in the fi
 
 ## Application 1, Boston housing data
 Below follows the code for recreating the results on the Boston housing data.
-
 ```jl
 using RDatasets, RCall, Distributions, LinearAlgebra
 include("BcqrAepd.jl")
@@ -29,7 +28,17 @@ y = log.(dat[:, :MedV])
 y = y .- mean(y)
 X = dat[:, Not(["MedV"])] |> Matrix
 X = mapslices(x -> (x .- mean(x))./√var(x), X, dims = 1)
+
+θ = range(0.1, 0.9, length = 9)
 ```
+
+### Full dataset
+```jl
+chn, pr, b = mcmc(y, X, θ, 12000, 2000, ϵp = 0.05, ϵβ = 0.09, ϵb = 0.009)
+aldN = cqr(y, X, 12000, 2000)
+```
+
+### Cross-fold validation
 
 ## References
 - Huang, Hanwen, and Zhongxue Chen. "Bayesian composite quantile regression." *Journal of Statistical Computation and Simulation* 85.18 (2015): 3744-3754.
