@@ -70,22 +70,6 @@ function lploss(u::AbstractVector{<:Real}, x::AbstractVector{<:Real}, θ::Real, 
     sum(map(z -> abs(θ - (z <= u[1] ? 1 : 0)) * abs(z-u[1])^p, x))
 end
 
-"""function sampleb(b::AbstractVector{<:Real}, ϵ::Real, y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, C::AbstractMatrix{<:Real},
-    β::AbstractVector{<:Real}, τ::AbstractVector{<:Real}, p::Real, σ::Real)
-    k = length(b)
-    z = y - X * β
-    #eps = y - X * (X'X)^(-1) * X'y |> x -> quantile(x, τ)
-    ret = zeros(k)
-    for i ∈ 1:k
-        #opt = optimize(u -> lploss(u, z, τ[k], p), zeros(1), BFGS())
-        #loc = opt.ls_success ? opt.minimizer[1] : quantile(z, τ[k])
-        prop = rand(Normal(b[k], ϵ))
-        ret[i] = mh_accept(kernel(y, X, C[i,:], β, τ[i], b[i], p, σ),
-            kernel(y,X,C[i,:],β,τ[i],prop,p,σ), 0) ? prop : b[i]
-    end
-    ret
-end"""
-
 function ∂b(b::AbstractVector{<:Real}, β::AbstractVector{<:Real}, y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, C::AbstractMatrix{<:Real},
     τ::AbstractVector{<:Real}, p::Real, σ::Real)
     ForwardDiff.gradient(b -> kernel(y, X, C, β, τ, b, p, σ), b)
@@ -101,16 +85,6 @@ function sampleb(b::AbstractVector{<:Real}, ϵ::Real, y::AbstractVector{<:Real},
     quotient = logpdf(MvNormal(prop + ϵ^2/2 * H * ∇ₚ, ϵ^2 * H), b) - logpdf(MvNormal(b + ϵ^2 / 2 * H* ∇, ϵ^2 * H), prop)
     mh_accept(kernel(y, X, C, β, τ, b, p, σ), kernel(y, X, C, β, τ, prop, p, σ), quotient) ? prop : b
 end
-
-"""function sampleb(b::AbstractVector{<:Real}, ϵ::Real, y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, C::AbstractMatrix{<:Real},
-    β::AbstractVector{<:Real}, τ::AbstractVector{<:Real}, p::Real, σ::Real)
-    k = length(b)
-    prop = zeros(k)
-    for i ∈ 1:k
-        prop[i] = rand(Normal(b[i], ϵ))
-    end
-    mh_accept(kernel(y, X, C, β, τ, b, p, σ), kernel(y, X, C, β, τ, prop, p, σ), 0) ? prop : b
-end"""
 
 sampleW(C::AbstractMatrix{<:Real}, α::AbstractVector{<:Real}) = rand(Dirichlet(α + vec(sum(C, dims = 2))))
 sampleW(C::AbstractMatrix{<:Real}, α::Real) = rand(Dirichlet(α .+ vec(sum(C, dims = 2))))
