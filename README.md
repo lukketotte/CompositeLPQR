@@ -37,8 +37,40 @@ X = mapslices(x -> (x .- mean(x))./√var(x), X, dims = 1)
 chn, pr, b = mcmc(y, X, θ, 12000, 2000, ϵp = 0.05, ϵβ = 0.09, ϵb = 0.009)
 aldN = cqr(y, X, 12000, 2000)
 ```
+Note that mcmc returns a `vector` with the first element being of type `::MCMCchains`
 
 ### Cross-fold validation
+```jl
+n, K = length(y), 10
+stops = round.(Int, range(1, n, length = K+1))
+vsets = [s:e-(e<n)*1 for (s,e) in zip(stops[1:end-1],stops[2:end])]
+ids = sample(1:n, n, replace = false)
+y = y[ids]
+X = X[ids, :]
+
+aldN = zeros(K)
+epd = zeros(K)
+
+for i in 1:K
+    ytrain, ytest = y[Not(vsets[i])], y[vsets[i]]
+    Xtrain, Xtest = X[Not(vsets[i]),:], X[vsets[i],:]
+
+    chn, _, _ = mcmc(y, X, θ, 12000, 2000, ϵp = 0.18, ϵβ = 1.7, ϵb = 0.2)
+    #chn, _, _ = mcmc(ytrain, Xtrain, θ, 12000, 2000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
+    str1 = string(round(mean(chn[:β1][2:end] .!= chn[:β1][1:(end-1)]), digits = 2))
+    str2 = string(round(mean(chn[:p][2:end] .!= chn[:p][1:(end-1)]), digits = 2))
+    println(string(i)*": " * str1  * ", " * str2)
+    ald = cqr(ytrain, Xtrain, 12000, 2000)
+
+    thin = (1:size(chn, 1)) .% 5 .== 0
+    βepd = Array(chn)[thin, 1:size(X, 2)] |> x -> vec(median(x, dims = 1))
+    βald = ald[:beta][thin,:] |> x -> vec(median(x, dims = 1))
+
+    epd[i] = mean(abs.(ytest - Xtest * βepd))
+    aldN[i] = mean(abs.(ytest - Xtest * βald))
+end
+```
+
 
 ## References
 - Huang, Hanwen, and Zhongxue Chen. "Bayesian composite quantile regression." *Journal of Statistical Computation and Simulation* 85.18 (2015): 3744-3754.
