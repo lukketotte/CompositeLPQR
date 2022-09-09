@@ -9,5 +9,10 @@ $$
 where
 
 $$
-  \rho_{\tau, p}(y) = |\tau - I(y \leq 0)||y|^p,\ p \in (0, \infty)
+  \rho_{\tau, p}(y) = |\tau - I(y \leq 0)||y|^p,\ p \in (0, \infty).
 $$
+
+The code also includes the R code from the paper Huang and Chen (2015), which was gracefully provided by Hanwen Huang.
+
+## References
+- Huang, Hanwen, and Zhongxue Chen. "Bayesian composite quantile regression." *Journal of Statistical Computation and Simulation* 85.18 (2015): 3744-3754.
