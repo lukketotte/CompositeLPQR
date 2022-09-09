@@ -37,7 +37,7 @@ X = mapslices(x -> (x .- mean(x))./√var(x), X, dims = 1)
 chn, pr, b = mcmc(y, X, θ, 12000, 2000, ϵp = 0.05, ϵβ = 0.09, ϵb = 0.009)
 aldN = cqr(y, X, 12000, 2000)
 ```
-Note that mcmc returns a `vector` with the first element being of type `::MCMCchains`, see [juliapackages.com/p/mcmcchains](https://juliapackages.com/p/mcmcchains) for more details.
+Note that the first element returned by `mcmc` is of type `::MCMCchains`, see [juliapackages.com/p/mcmcchains](https://juliapackages.com/p/mcmcchains) for more details.
 
 ### Cross-fold validation
 ```jl
