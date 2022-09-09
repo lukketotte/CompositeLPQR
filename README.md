@@ -55,8 +55,7 @@ for i in 1:K
     ytrain, ytest = y[Not(vsets[i])], y[vsets[i]]
     Xtrain, Xtest = X[Not(vsets[i]),:], X[vsets[i],:]
 
-    chn, _, _ = mcmc(y, X, θ, 12000, 2000, ϵp = 0.18, ϵβ = 1.7, ϵb = 0.2)
-    #chn, _, _ = mcmc(ytrain, Xtrain, θ, 12000, 2000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
+    chn, _, _ = mcmc(ytrain, Xtrain, θ, 12000, 2000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
     str1 = string(round(mean(chn[:β1][2:end] .!= chn[:β1][1:(end-1)]), digits = 2))
     str2 = string(round(mean(chn[:p][2:end] .!= chn[:p][1:(end-1)]), digits = 2))
     println(string(i)*": " * str1  * ", " * str2)
