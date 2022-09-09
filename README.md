@@ -12,7 +12,24 @@ $$
   \rho_{\tau, p}(y) = |\tau - I(y \leq 0)||y|^p,\ p \in (0, \infty).
 $$
 
-The code also includes the R code from the paper Huang and Chen (2015), which was gracefully provided by Hanwen Huang.
+The code also includes the R code from the paper Huang and Chen (2015) in the file `BcqrAepd.jl`, which was gracefully provided by Hanwen Huang.
+
+## Application 1, Boston housing data
+Below follows the code for recreating the results on the Boston housing data.
+
+```jl
+using RDatasets, RCall, Distributions, LinearAlgebra
+include("BcqrAepd.jl")
+using .compositeQR
+include("Lpcqr.jl")
+using .lpcrq
+
+dat = dataset("MASS", "Boston")
+y = log.(dat[:, :MedV])
+y = y .- mean(y)
+X = dat[:, Not(["MedV"])] |> Matrix
+X = mapslices(x -> (x .- mean(x))./√var(x), X, dims = 1)
+```
 
 ## References
 - Huang, Hanwen, and Zhongxue Chen. "Bayesian composite quantile regression." *Journal of Statistical Computation and Simulation* 85.18 (2015): 3744-3754.
