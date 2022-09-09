@@ -56,9 +56,6 @@ for i in 1:K
     Xtrain, Xtest = X[Not(vsets[i]),:], X[vsets[i],:]
 
     chn, _, _ = mcmc(ytrain, Xtrain, θ, 12000, 2000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
-    str1 = string(round(mean(chn[:β1][2:end] .!= chn[:β1][1:(end-1)]), digits = 2))
-    str2 = string(round(mean(chn[:p][2:end] .!= chn[:p][1:(end-1)]), digits = 2))
-    println(string(i)*": " * str1  * ", " * str2)
     ald = cqr(ytrain, Xtrain, 12000, 2000)
 
     thin = (1:size(chn, 1)) .% 5 .== 0
