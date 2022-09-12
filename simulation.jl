@@ -2,7 +2,7 @@
 ### Program for simulations ###
 ###############################
 #TODO: GRID START FOR MIXTURE DISTRIBUTIONS
-using Distributed, SharedArrays, Random
+using Distributed, SharedArrays, Random, CSV
 @everywhere using Distributions, LinearAlgebra, DataFrames, MCMCChains
 
 @everywhere include("BcqrAepd.jl")
@@ -81,8 +81,8 @@ for j in 1:length(samplers)
     BCQR1[j, :val], BCQR1[j, :sd] = mean(aldN), √var(aldN)
 end
 
-print(BCLR1)
-print(BCQR1)
+CSV.write("BCLR1.csv", BCLR1)
+CSV.write("BCQR1.csv", BCQR1)
 
 ## Setting 2
 samplers = [
@@ -142,5 +142,5 @@ for j in 1:length(samplers)
     BCLR2[j, [:tp, :fp]] = vec(mean(epd, dims = 1))
 end
 
-print(BCLR2)
-print(BCQR2)
+CSV.write("BCLR2.csv", BCLR2)
+CSV.write("BCQR2.csv", BCQR2)
