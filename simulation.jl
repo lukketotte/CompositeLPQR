@@ -1,7 +1,6 @@
 ###############################
 ### Program for simulations ###
 ###############################
-#TODO: GRID START FOR MIXTURE DISTRIBUTIONS
 using Distributed, SharedArrays, Random, CSV
 @everywhere using Distributions, LinearAlgebra, DataFrames, MCMCChains
 

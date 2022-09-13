@@ -63,7 +63,7 @@ end
 
 function sampleσ(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, C::AbstractMatrix{<:Real},
     β::AbstractVector{<:Real}, τ::AbstractVector{<:Real}, b::AbstractVector{<:Real}, p::Real)
-    rand(InverseGamma(length(y)/p, -kernel(y, X, C, β, τ, b, p, 1)))^(1/p)
+    rand(InverseGamma(length(y)/p + 0.1, -kernel(y, X, C, β, τ, b, p, 1) + 0.1))^(1/p)
 end
 
 function lploss(u::AbstractVector{<:Real}, x::AbstractVector{<:Real}, θ::Real, p::Real)
