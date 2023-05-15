@@ -15,7 +15,7 @@ $$
 The code also includes the R code from the paper Huang and Chen (2015) in the file `BcqrAepd.jl`, which was gracefully provided by Hanwen Huang.
 
 ## Application 1, Boston housing data
-Below follows the code for recreating the results on the Boston housing data.
+The code for recreating the results on the Boston housing data follows below.
 ```jl
 using RDatasets, RCall, Distributions, LinearAlgebra
 include("BcqrAepd.jl")
