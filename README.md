@@ -3,7 +3,7 @@
 Provides methods and code for recreation of results in working paper **Bayesian $L^p$-quantile regression** based on the loss function
 
 $$
-  (\hat{b}_{\tau_1}, \ldots, \hat{b}_{\tau_K}, \hat{\mathbf{\beta}})
+  (\hat{b}_{\tau_1}, \ldots, \hat{b}_{\tau_K})
 $$
 
 $$
