@@ -72,7 +72,7 @@ for j in 1:length(samplers)
         if j === 6 && str3 > 0.08 && str1 >= 0.8 # some samples of ML requires a much larger ϵβ
             chn, _, _ = mcmc(y, X, θ, 13000, 3000, β = ones(p), ϵp = 0.2, ϵβ = 2., ϵb = 0.15)
             str1 = mean(chn[:β1][2:end] .!= chn[:β1][1:(end-1)])
-            epd[i] = Array(chn)[thin,1:p] |> x -> norm(vec(median(x, dims = 1)) - ones(p))
+            epd[i] = Array(chn)[thin,1:p] |> x -> norm(vec(mean(x, dims = 1)) - ones(p))
         end
         println("dist: " * string(j) * ", iter " *string(i) * ": " * string(round(str1, digits = 2)) * ", diff: " * string(str3))
     end
@@ -130,7 +130,7 @@ for j in 1:length(samplers)
         aldN = cqr(y, X, 13000, 3000)
         ald[i,:] .= varSelection(aldN[:beta][thin,:], [1,2,5])
         epd[i,:] .= varSelection(Array(chn)[thin, 1:p], [1,2,5])
-        aldError[i] = norm(vec(median(aldN[:beta][thin,:], dims = 1)) - β)
+        aldError[i] = norm(vec(mean(aldN[:beta][thin,:], dims = 1)) - β)
         epdError[i] = Array(chn)[thin,1:p] |> x -> norm(vec(median(x, dims = 1)) - β)
         str3 = round(epdError[i] - aldError[i], digits = 3)
         println("dist: " * string(j) * ", iter "*string(i) * ": " * string(str1)  * ", diff: " * string(str3))
