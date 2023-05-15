@@ -2,9 +2,9 @@
 
 Provides methods and code for recreation of results in working paper **Bayesian $L^p$-quantile regression** based on the loss function
 
-$$
+```math
   (\hat{b}_{\tau_1}, \ldots, \hat{b}_{\tau_K}, \hat{\mathbf{\beta}}) = \underset{b_{\tau_1}, \ldots, b_{\tau_K}, \mathbf{\beta}}{\operatorname{argmin}} \sum_{i=1}^n\sum_{k=1}^K w_k\rho_{\tau_k, p}(y_i - b_{\tau_1} - \mathbf{x}_i^T \mathbf{\beta}),
-$$
+```
 
 
 <img src="https://latex.codecogs.com/svg.image?{\color{White}&space;(\hat{b}_{\tau_1},&space;\ldots,&space;\hat{b}_{\tau_K},&space;\hat{\mathbf{\beta}})&space;=&space;\underset{b_{\tau_1},&space;\ldots,&space;b_{\tau_K},&space;\mathbf{\beta}}{\operatorname{argmin}}&space;\sum_{i=1}^n\sum_{k=1}^K&space;w_k\rho_{\tau_k,&space;p}(y_i&space;-&space;b_{\tau_1}&space;-&space;\mathbf{x}_i^T&space;\mathbf{\beta})}" title="https://latex.codecogs.com/svg.image?{\color{White} (\hat{b}_{\tau_1}, \ldots, \hat{b}_{\tau_K}, \hat{\mathbf{\beta}}) = \underset{b_{\tau_1}, \ldots, b_{\tau_K}, \mathbf{\beta}}{\operatorname{argmin}} \sum_{i=1}^n\sum_{k=1}^K w_k\rho_{\tau_k, p}(y_i - b_{\tau_1} - \mathbf{x}_i^T \mathbf{\beta})}" />
