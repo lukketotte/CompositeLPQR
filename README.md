@@ -59,8 +59,8 @@ for i in 1:K
     ald = cqr(ytrain, Xtrain, 12000, 2000)
 
     thin = (1:size(chn, 1)) .% 5 .== 0
-    βepd = Array(chn)[thin, 1:size(X, 2)] |> x -> vec(median(x, dims = 1))
-    βald = ald[:beta][thin,:] |> x -> vec(median(x, dims = 1))
+    βepd = Array(chn)[thin, 1:size(X, 2)] |> x -> vec(mean(x, dims = 1))
+    βald = ald[:beta][thin,:] |> x -> vec(mean(x, dims = 1))
 
     epd[i] = mean(abs.(ytest - Xtest * βepd))
     aldN[i] = mean(abs.(ytest - Xtest * βald))
