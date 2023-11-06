@@ -1,7 +1,7 @@
 ###############################
 ### Program for simulations ###
 ###############################
-using Distributed, SharedArrays, Random, CSV
+using Distributed, SharedArrays, Random, CSV, Dates
 @everywhere using Distributions, LinearAlgebra, DataFrames, MCMCChains
 
 @everywhere include("BcqrAepd.jl")
@@ -23,17 +23,21 @@ using Distributed, SharedArrays, Random, CSV
 end
 
 @everywhere function varSelection(β::AbstractMatrix{<:Real}, nonZeroId::AbstractVector{<:Int}, α::Real = 0.05)
-    TP,FP = 0,0
+    TP, FP, TN = 0, 0, 0
     p = size(β, 2)
     for i ∈ 1:p
         interval = quantile(β[:,i], [α/2, 1-α/2])
-        if minimum(interval) < 0 || minimum(interval) < 0
-            FP += any(nonZeroId .== i) ? 1 : 0
+        if interval[1] < 0 && interval[2] > 0
+            if !any(i .== nonZeroId)
+                TN += 1
+            else
+                FP += 1
+            end
         else
-            TP += any(nonZeroId .== i) ? 1 : 0
+            TP += any(i .== nonZeroId) ? 1 : 0
         end
     end
-    (TP, FP)
+    (TP,FP,TN)
 end
 
 ## Setting 1
@@ -100,14 +104,15 @@ X = rand(MultivariateNormal(zeros(p), I), n) |> x -> reshape(x, n, p)
 β = zeros(p)
 β[[1, 2, 5]] = [0.5, 1.5, 0.2]
 
-BCLR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0., tp_sd = 0., fp_sd = 0.);
-BCQR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0., tp_sd = 0., fp_sd = 0.);
+BCLR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0., oa = 0., oa_sd = 0.);
+BCQR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0., oa = 0., oa_sd = 0.);
 
-N = 10
+
+N = 100
 for j ∈ eachindex(samplers)
     println("")
-    ald = SharedArray{Float64}((N, 2))
-    epd = SharedArray{Float64}((N, 2))
+    ald = SharedArray{Float64}((N, 3))
+    epd = SharedArray{Float64}((N, 3))
     aldError = SharedArray{Float64}(N)
     epdError =SharedArray{Float64}(N)
 
@@ -134,16 +139,15 @@ for j ∈ eachindex(samplers)
         aldError[i] = norm(vec(mean(aldN[:beta][thin,:], dims = 1)) - β)
         epdError[i] = Array(chn)[thin,1:p] |> x -> norm(vec(median(x, dims = 1)) - β)
         str3 = round(epdError[i] - aldError[i], digits = 3)
-        println("dist: " * string(j) * ", iter "*string(i) * ": " * string(str1)  * ", diff: " * string(str3))
+        println("dist: " * string(j) * "/" * string(length(samplers)) * ", iter "*string(i) * ": " * string(str1)  * ", diff: " * string(str3))
     end
     BCLR2[j, :val], BCLR2[j, :sd] = mean(epdError), √var(epdError)
     BCQR2[j, :val], BCQR2[j, :sd] = mean(aldError), √var(aldError)
-    BCQR2[j, [:tp, :fp]] = vec(mean(ald, dims = 1))
-    BCLR2[j, [:tp, :fp]] = vec(mean(epd, dims = 1))
-    BCQR2[j, [:tp_sd, :fp_sd]] = [√var(ald[:,1]), √var(ald[:,2])]
-    BCLR2[j, [:tp_sd, :fp_sd]] = [√var(epd[:,1]), √var(epd[:,2])]
+    BCQR2[j, [:tp, :fp]] = vec(mean(ald[:,1:2], dims = 1))
+    BCLR2[j, [:tp, :fp]] = vec(mean(epd[:,1:2], dims = 1))
+    BCQR2[j, [:oa, :oa_sd]] = ((ald[:,1] + ald[:,3])./p) |> x -> [mean(x), √var(x)]
+    BCLR2[j, [:oa, :oa_sd]] = ((epd[:,1] + epd[:,3])./p) |> x -> [mean(x), √var(x)]
 end
 
-CSV.write("BCLR2.csv", BCLR2)
-CSV.write("BCQR2.csv", BCQR2)
-
+CSV.write("BCLR2_$(hour(now()))_$(minute(now())).csv", BCLR2)
+CSV.write("BCQR2_$(hour(now()))_$(minute(now())).csv", BCQR2)
