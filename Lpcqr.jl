@@ -13,9 +13,9 @@ end
 function kernel(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, C::AbstractMatrix{<:Real},
     β::AbstractVector{<:Real}, τ::AbstractVector{<:Real}, b::AbstractVector{<:Real}, p::Real, σ::Real)
     res = 0
-    for k ∈ 1:length(b)
+    for k ∈ eachindex(b)
         z = (y - X*β) .- b[k]
-        for i ∈ 1:length(z)
+        for i ∈ eachindex(z)
             res += C[k,i] === 1 ? ρ(z[i]/σ, τ[k], p) : 0
         end
     end
@@ -26,7 +26,7 @@ function kernel(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, c::Abstrac
     β::AbstractVector{<:Real}, τ::Real, b::Real, p::Real, σ::Real)
     z = y - X*β .- b
     res = 0
-    for i ∈ 1:length(z)
+    for i ∈ eachindex(z)
         res += c[i] === 1 ? ρ(z[i]/σ, τ, p) : 0
     end
     -res
