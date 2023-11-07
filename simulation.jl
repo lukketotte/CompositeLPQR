@@ -85,8 +85,9 @@ for j ∈ eachindex(samplers)
     BCQR1[j, :val], BCQR1[j, :sd] = mean(aldN), √var(aldN)
 end
 
-CSV.write("BCLR1.csv", BCLR1)
-CSV.write("BCQR1.csv", BCQR1)
+CSV.write("BCLR1_$(hour(now()))_$(minute(now())).csv", BCLR1)
+CSV.write("BCQR1_$(hour(now()))_$(minute(now())).csv", BCQR1)
+
 
 ## Setting 2
 @everywhere samplers = [
@@ -108,7 +109,7 @@ BCLR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0.
 BCQR2 = DataFrame(dist = 1:length(samplers), val = 0., sd = 0., tp = 0., fp = 0., oa = 0., oa_sd = 0.);
 
 
-N = 100
+N = 2
 for j ∈ eachindex(samplers)
     println("")
     ald = SharedArray{Float64}((N, 3))

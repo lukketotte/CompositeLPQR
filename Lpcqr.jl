@@ -101,7 +101,7 @@ function sampleC(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, b::Abstra
         for j ∈ 1:k
             probs[j] = ρ((z[i] - b[j])/σ, τ[j], p)
         end
-        probs = K .* exp.(.- (probs .- minimum(probs)))
+        probs = K .* exp.(-(probs .- minimum(probs)))
         retC[:,i] = rand(Multinomial(1, probs./sum(probs)))
     end
     retC
