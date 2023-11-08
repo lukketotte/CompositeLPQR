@@ -164,6 +164,8 @@ function mcmc(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, τ::Abstract
     n,P = size(X)
     C = zeros(Int64, k, n, niter)
     C[:,:,1] = rand(Multinomial(1, ones(k)/k), n)
+    W = zeros(Float64, niter, k)
+    W[1,:] = rand(Dirichlet([0.1 for i in 1:k]))
     kwargs =  Dict(kwargs)
     β, b, σ, p = initsAepd(k, size(X,2), niter, kwargs)
     ϵβ, ϵb, ϵp = mhVar(kwargs)
@@ -174,12 +176,14 @@ function mcmc(y::AbstractVector{<:Real}, X::AbstractMatrix{<:Real}, τ::Abstract
         b[i,:] = sampleb(b[i-1,:], ϵb, y, X, C[:,:,i-1], β[i,:], τ, p[i-1], σ[i-1])
         p[i] = samplep(p[i-1], ϵp, y, X, C[:,:,i-1], β[i, :], τ, b[i,:], σ[i-1])
         σ[i] = sampleσ(y, X, C[:,:,i-1], β[i, :], τ, b[i,:], p[i])
-        w = sampleW(C[:,:,i-1], 0.1)
-        C[:,:,i] = try sampleC(y, X, b[i,:], β[i,:], w, τ, p[i], σ[i]) catch e C[:,:,i-1] end
+        C[:,:,i] = try sampleC(y, X, b[i,:], β[i,:], W[i-1,:], τ, p[i], σ[i]) catch e C[:,:,i-1] end
+        #w = sampleW(C[:,:,i-1], 0.1)
+        W[i,:] = sampleW(C[:,:,i], 0.1)
     end
 
     names = append!(["β"*string(i) for i in 1:P], ["σ", "p"])
-    (Chains(hcat(β, σ, p)[(burn+1):niter,:], names), vec(mean(C[:,:,:], dims = [2,3])), b[(burn+1):niter, :])
+    #(Chains(hcat(β, σ, p)[(burn+1):niter,:], names), vec(mean(C[:,:,:], dims = [2,3])), b[(burn+1):niter, :])
+    (Chains(hcat(β, σ, p)[(burn+1):niter,:], names), W[(burn+1):niter,:], b[(burn+1):niter, :])
 end
 
 end
