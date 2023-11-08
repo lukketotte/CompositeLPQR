@@ -34,9 +34,15 @@ X = mapslices(x -> (x .- mean(x))./√var(x), X, dims = 1)
 
 ### Full dataset
 ```jl
-chn, pr, b = mcmc(y, X, θ, 12000, 2000, ϵp = 0.05, ϵβ = 0.09, ϵb = 0.009)
-aldN = cqr(y, X, 12000, 2000)
+chn, pr, b = mcmc(y, X, θ, 30000, 5000, ϵp = 0.05, ϵβ = 0.09, ϵb = 0.009)
+aldN = cqr(y, X, 30000, 5000) 
 ```
+
+The signature of `cqr` has a fifth argument which is a string with the location of necessary R libraries. For example
+```jl
+aldN = cqr(y, X, 30000, 5000, "~/R.framework/Versions/4.3-arm64/Resources/library") 
+```
+
 Note that the first element returned by `mcmc` is of type `::MCMCchains`, see [juliapackages.com/p/mcmcchains](https://juliapackages.com/p/mcmcchains) for more details.
 
 ### Cross-fold validation
@@ -55,8 +61,8 @@ for i in 1:K
     ytrain, ytest = y[Not(vsets[i])], y[vsets[i]]
     Xtrain, Xtest = X[Not(vsets[i]),:], X[vsets[i],:]
 
-    chn, _, _ = mcmc(ytrain, Xtrain, θ, 12000, 2000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
-    ald = cqr(ytrain, Xtrain, 12000, 2000)
+    chn, _, _ = mcmc(ytrain, Xtrain, θ, 30000, 5000, ϵp = 0.042, ϵβ = 0.08, ϵb = 0.0082);
+    ald = cqr(ytrain, Xtrain, 30000, 5000)
 
     thin = (1:size(chn, 1)) .% 5 .== 0
     βepd = Array(chn)[thin, 1:size(X, 2)] |> x -> vec(mean(x, dims = 1))
